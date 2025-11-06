@@ -35,10 +35,20 @@ struct Person: Identifiable {
     
 }
 
+// add
+struct Tag: Identifiable, Hashable {
+    var id = UUID()
+    var emoji: String
+    var name: String
+    var isSelected: Bool = false
+}
+
 
 struct ContentView: View {
     @State private var searchText = ""
     @State private var selectedFilters: [String] = []
+    @State private var showAddSheet = false
+    @State private var people: [Person] = []
     
     let categories = [
         ("📚", "Class", 4),
@@ -53,7 +63,7 @@ struct ContentView: View {
             bgColor.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 0) {
-
+                
                 Text("App name")
                     .font(.largeTitle)
                     .bold()
@@ -125,7 +135,7 @@ struct ContentView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         PersonCard(person: Person(name: "John Doe", locationMet: "iOS Club", major: "CS", dateMet: "11/01/2025", insta: "john_doe",
-                            tags: ["📚 Class", "🧩 Club"]))
+                                                  tags: ["📚 Class", "🧩 Club"]))
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 100)
@@ -134,13 +144,13 @@ struct ContentView: View {
             
             // floating '+' button
             Button(action: {
-                // go to add new person screen
+                showAddSheet = true
             }) {
                 Image(systemName: "plus")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
                     .frame(width: 64, height: 64)
-                    
+                
                     .background(
                         LinearGradient(
                             gradient: linGradient,
@@ -152,6 +162,11 @@ struct ContentView: View {
             }
             .padding(.trailing, 24)
             .padding(.bottom, 24)
+            .sheet(isPresented: $showAddSheet) {
+                AddPersonView { newPerson in
+                    people.append(newPerson)
+                }
+            }
         }
     }
 }
@@ -265,3 +280,149 @@ struct TagView: View {
         )
     }
 }
+
+struct AddPersonView: View {
+    var onAdd: (Person) -> Void
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var newName : String = ""
+    @State private var newLocation : String = ""
+    @State private var newMajor : String = ""
+    @State private var newDate : String = ""
+    @State private var newInsta : String = ""
+    @State private var newTags : String = ""
+    @State private var newNotes : String = ""
+    
+    var body: some View {
+        ScrollView{
+            ZStack{
+                VStack (alignment: .leading){
+                    VStack (alignment: .leading){
+                        HStack{
+                            Text("Add new friend")
+                                .font(.largeTitle)
+                                .bold()
+                                .padding(.top, 20)
+                                .padding(.bottom, 16)
+                                
+                            Spacer ()
+                                
+                            Button {
+                                dismiss()
+                            } label : {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 30, weight: .bold))
+                                    .foregroundColor(.black)
+                                    .padding(10)
+                            }
+                        }
+                        }
+                        VStack (alignment: .leading){
+                            ZStack {
+                                VStack (alignment: .leading){
+                                    Text("Upload photo")
+                                        .bold()
+                                        .padding(.top)
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(.gray.opacity(0.2))
+                                        .frame(width: 120, height: 120)
+                                        .padding(.trailing, 12)
+                                    HStack{
+                                        Text("Name")
+                                            .padding(.top)
+                                            .bold()
+                                        Text("*")
+                                            .padding(.top)
+                                            .bold()
+                                            .foregroundColor(.blue)
+                                    }
+                                    
+                                    TextField("John Doe", text: $newName)
+                                        .padding(12)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                            .stroke(.black, lineWidth: 1))
+                                    Text("Where You Met")
+                                        .padding(.top)
+                                        .bold()
+                                    TextField("iOS Club", text: $newLocation)
+                                        .padding(12)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                            .stroke(.black, lineWidth: 1))
+                                    Text("Major")
+                                        .padding(.top)
+                                        .bold()
+                                    TextField("Computer Science", text: $newMajor)
+                                        .padding(12)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                            .stroke(.black, lineWidth: 1))
+                                    Text("Date Met")
+                                        .padding(.top)
+                                        .bold()
+                                    TextField("mm/dd/yyyy", text: $newDate)
+                                        .padding(12)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                            .stroke(.black, lineWidth: 1))
+                                    Text("Instagram")
+                                        .padding(.top)
+                                        .bold()
+                                    TextField("@username", text: $newInsta)
+                                        .padding(12)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8)
+                                            .stroke(.black, lineWidth: 1))
+                                    HStack {
+                                        Text("Tags")
+                                            .bold()
+                                            .padding(.top)
+                                        Text("*")
+                                            .padding(.top)
+                                            .bold()
+                                            .foregroundColor(.blue)
+                                    }
+                                    VStack{
+                                        HStack {
+                                            
+                                        }
+                                        TextField("New tag name", text: $newTags)
+                                            .padding(12)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                .stroke(.black, lineWidth: 1))
+                                    }
+                                    Text("Additional Notes")
+                                        .bold()
+                                        .padding(.top)
+                                    ZStack{
+                                        TextEditor(text: $newNotes)
+                                            .frame(height: 100)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                .stroke(.black, lineWidth: 1))
+                                            .overlay(
+                                                Group {
+                                                    if newNotes.isEmpty {
+                                                        Text("Interests, what you talked about, etc...")
+                                                            .foregroundColor(.gray)
+                                                    }
+                                                }
+                                                    .frame(width: 350, height: 80, alignment:.topLeading)
+                                            )
+                                    }
+                                    
+                                }
+                            }
+                        }
+                }
+                .padding(16)
+                .background(.white)
+                .cornerRadius(16)
+            }
+        }
+        Spacer()
+    }
+}
+
