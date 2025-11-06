@@ -48,7 +48,14 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var selectedFilters: [String] = []
     @State private var showAddSheet = false
-    @State private var people: [Person] = []
+    @State private var people: [Person] = [
+        Person(name: "John Doe",
+               locationMet : "iOS Club",
+               major: "CS",
+               dateMet: "11/01/2025",
+               insta: "john_doe",
+               tags: ["📚 Class", "🧩 Club"])
+    ]
     
     let categories = [
         ("📚", "Class", 4),
@@ -134,8 +141,10 @@ struct ContentView: View {
                 // people list
                 ScrollView {
                     VStack(spacing: 16) {
-                        PersonCard(person: Person(name: "John Doe", locationMet: "iOS Club", major: "CS", dateMet: "11/01/2025", insta: "john_doe",
-                                                  tags: ["📚 Class", "🧩 Club"]))
+                        ForEach(people) { person in
+                            PersonCard(person: person)
+                            
+                        }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 100)
@@ -412,6 +421,33 @@ struct AddPersonView: View {
                                                     .frame(width: 350, height: 80, alignment:.topLeading)
                                             )
                                     }
+                                    Button(action: {
+                                        let tagArray = newTags
+                                            .split(separator: ",")
+                                            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                                        let newPerson = Person(
+                                            name: newName,
+                                            locationMet: newLocation,
+                                            major: newMajor,
+                                            dateMet: newDate,
+                                            insta: newInsta,
+                                            tags: tagArray
+                                        )
+                                            onAdd(newPerson)
+                                            dismiss()
+                                        })
+                                    {
+                                        Text("Add Friend!")
+                                            .font(.system(size: 18, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 40)
+                                            .padding(.vertical, 14)
+                                            .background(.blue)
+                                            .cornerRadius(67)
+                                        
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .padding(.top, 20)
                                     
                                 }
                             }
