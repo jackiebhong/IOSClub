@@ -495,9 +495,10 @@ struct PersonProfileCard: View {
                         Button {
                             dismiss()
                         } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 28))
-                                .foregroundColor(.black.opacity(0.7))
+                            Image(systemName: "xmark")
+                                .font(.system(size: 30, weight: .bold))
+                                .foregroundColor(.black)
+                                .padding(10)
                                 
                         }
                     }
