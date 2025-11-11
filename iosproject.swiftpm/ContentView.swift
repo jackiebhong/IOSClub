@@ -481,99 +481,98 @@ struct AddPersonView: View {
 
 struct PersonProfileCard: View {
     var person: Person
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        
-        VStack(spacing: 12) {
-            ZStack(alignment: .bottomTrailing) {
-                bgColor.ignoresSafeArea()
-                
-                HStack(alignment: .center, spacing: 4) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(person.name)
-                            .font(.largeTitle)
-                            .bold()
-                            .padding(.horizontal, 24)
-                            .padding(.top, 10)
-                            .padding(.bottom, 16)
-                        
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.gray.opacity(0.2))
-                            .frame(width: 240, height: 240)
-                            .padding(.trailing, 12)
-                            .padding(.bottom, 16)
-                        
-                        HStack(spacing: 12) {
-                            ForEach(person.tags, id: \.self) { tagName in
-                                TagView(label: tagName)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "mappin.and.ellipse")
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                            Text(person.locationMet)
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                        }
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "book.closed")
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                            Text(person.major)
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                        }
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "calendar")
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                            Text("Met \(person.dateMet)")
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                        }
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "at")
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                            Text(person.insta)
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                        }
-                        
-                        VStack (spacing: 4) {
-                            Text("Description")
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                                .bold()
-                            Text(person.description)
-                                .font(.system(size: 22))
-                                .foregroundColor(.black.opacity(0.6))
-                            
-                        }
-                        .padding(.top, 10)
-                    }
-                    
-                    Spacer()
-                    
-                    
-                    
-                }
-            }
-            .padding(16)
-            .padding(.bottom, 50)
-            .background(.white)
-            .cornerRadius(16)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(.black, lineWidth: 1)
-            )
+        ZStack {
+            bgColor.ignoresSafeArea()
             
+            ScrollView {
+                VStack(alignment: .center, spacing: 20) {
+                    // Header
+                    HStack {
+                        Spacer()
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 28))
+                                .foregroundColor(.black.opacity(0.7))
+                                
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 30) // optional, for spacing from top
+                    
+                    HStack {
+                        Text(person.name)
+                            .font(.system(size: 32, weight: .bold))
+                            .frame(alignment: .center)
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    // Photo placeholder
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(.gray.opacity(0.15))
+                        .frame(width: 180, height: 180)
+                    
+                    // Tags
+                    HStack(spacing: 8) {
+                        ForEach(person.tags, id: \.self) { tagName in
+                            TagView(label: tagName)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 8)
+                    
+                    // Info section
+                    VStack(alignment: .leading, spacing: 12) {
+                        InfoRow(icon: "mappin.and.ellipse", text: person.locationMet)
+                        InfoRow(icon: "book.closed", text: person.major)
+                        InfoRow(icon: "calendar", text: "Met \(person.dateMet)")
+                        InfoRow(icon: "at", text: person.insta)
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    // Description section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Notes")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text(person.description)
+                            .font(.system(size: 16))
+                            .foregroundColor(.black.opacity(0.7))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(12)
+                            .background(.white)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(.black, lineWidth: 1)
+                            )
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+                    
+                    Spacer(minLength: 50)
+                }
+                .padding(.bottom, 30)
+            }
+        }
+    }
+}
+
+struct InfoRow: View {
+    var icon: String
+    var text: String
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(.black.opacity(0.6))
+            Text(text)
+                .font(.system(size: 16))
+                .foregroundColor(.black.opacity(0.8))
         }
     }
 }
