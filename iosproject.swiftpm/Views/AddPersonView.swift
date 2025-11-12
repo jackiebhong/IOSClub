@@ -13,6 +13,13 @@ struct AddPersonView: View {
     @State private var newTags : String = ""
     @State private var newNotes : String = ""
     
+    //tag variables
+    @State private var allTags = ["📚 Class", "👟 Gym", "🧩 Club", "🛏️ Dorm", "🏫 Week of Welcome"]
+    @State private var selectedTags: [String] = []
+    @State private var customTag: String = ""
+    @State private var selectedEmoji: String = "📚"
+    @State private var showEmojiPicker: Bool = false
+    
     //add requirements
     @State private var showValidationError = false
     
@@ -90,6 +97,7 @@ struct AddPersonView: View {
                                             .foregroundColor(.blue)
                                     }
                                     
+                                    // all user input
                                     TextField("John Doe", text: $newName)
                                         .padding(12)
                                         .overlay(
@@ -136,15 +144,60 @@ struct AddPersonView: View {
                                             .bold()
                                             .foregroundColor(.blue)
                                     }
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 8) {
+                                            ForEach(allTags, id: \.self) { tag in
+                                                let isOn = selectedTags.contains(tag)
+                                                Button {
+                                                    if isOn { selectedTags.removeAll { $0 == tag} }
+                                                    else { selectedTags.append(tag) }
+                                                } label: {
+                                                    Text(tag)
+                                                        .font(.system(size: 14, weight: .medium))
+                                                        .padding(.horizontal, 10)
+                                                        .padding(.vertical, 6)
+                                                        .background(isOn ? .blue : .white)
+                                                        .foregroundColor(isOn ? .white : .black)
+                                                        .cornerRadius(67)
+                                                        .overlay(
+                                                            RoundedRectangle(cornerRadius: 67)
+                                                                .stroke(isOn ? .blue: .black, lineWidth: 1)
+                                                        )
+                                                }
+                                            }
+                                            .padding(.bottom, 12)
+                                        }
+                                    }
                                     VStack{
                                         HStack {
-                                            
+                                            Button {
+                                                // if we want to be able to select emojis later
+                                                showEmojiPicker = true
+                                            } label : {
+                                                Text(selectedEmoji)
+                                            }
+                                            TextField("New tag name", text: $customTag)
+                                                .padding(12)
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(.black, lineWidth: 1))
+                                            Button {
+                                                let name = customTag.trimmingCharacters(in: .whitespacesAndNewlines)
+                                                guard !name.isEmpty else {return}
+                                                let newTag = "\(selectedEmoji) \(name)"
+                                                
+                                                if !allTags.contains(newTag) { allTags.append(newTag)}
+                                                if !selectedTags.contains(newTag) { selectedTags.append(newTag)}
+                                                
+                                            } label: {
+                                                Text("Add")
+                                                    .padding(.horizontal, 12)
+                                                    .padding(.vertical, 10)
+                                                    .background(.blue)
+                                                    .foregroundColor(.white)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            }
                                         }
-                                        TextField("New tag name", text: $newTags)
-                                            .padding(12)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                .stroke(.black, lineWidth: 1))
                                     }
                                     Text("Additional Notes")
                                         .bold()
@@ -165,20 +218,22 @@ struct AddPersonView: View {
                                                     .frame(width: 350, height: 80, alignment:.topLeading)
                                             )
                                     }
+                                    let typedTags = newTags
+                                        .split(separator: ",")
+                                        .map {String($0).trimmingCharacters(in: .whitespacesAndNewlines)}
+                                        .filter { !$0.isEmpty}
+                                    let finalTags = Array(Set(selectedTags + typedTags))
                                     Button {
                                         if newName.trimmingCharacters(in: .whitespaces).isEmpty {
                                             showValidationError = true
                                         } else {
-                                            let tagArray = newTags
-                                                .split(separator: ",")
-                                                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
                                             let newPerson = Person(
                                                 name: newName,
                                                 locationMet: newLocation,
                                                 major: newMajor,
                                                 dateMet: newDate,
                                                 insta: newInsta,
-                                                tags: tagArray,
+                                                tags: finalTags,
                                                 imageData: photo?.jpegData(compressionQuality: 0.9),
                                                 description: newNotes
                                             )
