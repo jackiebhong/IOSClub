@@ -13,6 +13,9 @@ struct AddPersonView: View {
     @State private var newTags : String = ""
     @State private var newNotes : String = ""
     
+    //add requirements
+    @State private var showValidationError = false
+    
     //photo upload variables
     @State private var showUpload = false
     @State private var photo: UIImage? = nil
@@ -162,24 +165,27 @@ struct AddPersonView: View {
                                                     .frame(width: 350, height: 80, alignment:.topLeading)
                                             )
                                     }
-                                    Button(action: {
-                                        let tagArray = newTags
-                                            .split(separator: ",")
-                                            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
-                                        let newPerson = Person(
-                                            name: newName,
-                                            locationMet: newLocation,
-                                            major: newMajor,
-                                            dateMet: newDate,
-                                            insta: newInsta,
-                                            tags: tagArray,
-                                            imageData: photo?.jpegData(compressionQuality: 0.9),
-                                            description: newNotes
-                                        )
-                                            onAdd(newPerson)
-                                            dismiss()
-                                        })
-                                    {
+                                    Button {
+                                        if newName.trimmingCharacters(in: .whitespaces).isEmpty {
+                                            showValidationError = true
+                                        } else {
+                                            let tagArray = newTags
+                                                .split(separator: ",")
+                                                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+                                            let newPerson = Person(
+                                                name: newName,
+                                                locationMet: newLocation,
+                                                major: newMajor,
+                                                dateMet: newDate,
+                                                insta: newInsta,
+                                                tags: tagArray,
+                                                imageData: photo?.jpegData(compressionQuality: 0.9),
+                                                description: newNotes
+                                            )
+                                                onAdd(newPerson)
+                                                dismiss()
+                                        }
+                                    } label: {
                                         Text("Add Friend!")
                                             .font(.system(size: 18, weight: .semibold))
                                             .foregroundColor(.white)
@@ -187,10 +193,14 @@ struct AddPersonView: View {
                                             .padding(.vertical, 14)
                                             .background(.blue)
                                             .cornerRadius(67)
-                                        
                                     }
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     .padding(.top, 20)
+                                    .alert("Missing name", isPresented: $showValidationError) {
+                                        Button("OK", role: .cancel) {}
+                                    } message: {
+                                        Text("Please enter a name before adding your friend")
+                                    }
                                     
                                 }
                             }
