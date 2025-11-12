@@ -93,8 +93,9 @@ struct AddPersonView: View {
                                             .bold()
                                         Text("*")
                                             .padding(.top)
+                                            .padding(.leading, -4)
                                             .bold()
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(Color(red: 0.353, green: 0.463, blue: 0.933))
                                     }
                                     
                                     // all user input
@@ -139,10 +140,6 @@ struct AddPersonView: View {
                                         Text("Tags")
                                             .bold()
                                             .padding(.top)
-                                        Text("*")
-                                            .padding(.top)
-                                            .bold()
-                                            .foregroundColor(.blue)
                                     }
                                     ScrollView(.horizontal, showsIndicators: false) {
                                         HStack(spacing: 8) {
@@ -156,7 +153,7 @@ struct AddPersonView: View {
                                                         .font(.system(size: 14, weight: .medium))
                                                         .padding(.horizontal, 10)
                                                         .padding(.vertical, 6)
-                                                        .background(isOn ? .blue : .white)
+                                                        .background(isOn ? Color(red: 0.353, green: 0.463, blue: 0.933) : .white)
                                                         .foregroundColor(isOn ? .white : .black)
                                                         .cornerRadius(67)
                                                         .overlay(
@@ -193,7 +190,7 @@ struct AddPersonView: View {
                                                 Text("Add")
                                                     .padding(.horizontal, 12)
                                                     .padding(.vertical, 10)
-                                                    .background(.blue)
+                                                    .background(Color(red: 0.353, green: 0.463, blue: 0.933))
                                                     .foregroundColor(.white)
                                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                             }
@@ -244,9 +241,9 @@ struct AddPersonView: View {
                                         Text("Add Friend!")
                                             .font(.system(size: 18, weight: .semibold))
                                             .foregroundColor(.white)
-                                            .padding(.horizontal, 40)
-                                            .padding(.vertical, 14)
-                                            .background(.blue)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 16)
+                                            .background(Gradient(colors: [Color(red: 0.271, green: 0.337, blue: 0.863), Color(red: 0.455, green: 0.580, blue: 1.00)]))
                                             .cornerRadius(67)
                                     }
                                     .frame(maxWidth: .infinity, alignment: .center)

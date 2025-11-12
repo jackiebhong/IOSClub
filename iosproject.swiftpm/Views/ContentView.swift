@@ -8,6 +8,7 @@ import SwiftUI
 
 let bgColor = Color(red: 0.988, green: 0.988, blue: 0.996)
 let linGradient = Gradient(colors: [Color(red: 0.271, green: 0.337, blue: 0.863), Color(red: 0.455, green: 0.580, blue: 1.00)])
+let mainPurple = Color(red: 0.353, green: 0.463, blue: 0.933)
 
 
 // add
@@ -18,22 +19,56 @@ struct ContentView: View {
     @State private var selectedFilters: [String] = []
     @State private var showAddSheet = false
     @State private var people: [Person] = [
-        Person(name: "John Doe",
-               locationMet : "iOS Club",
-               major: "CS",
-               dateMet: "11/01/2025",
-               insta: "john_doe",
-               tags: ["📚 Class", "🧩 Club"],
-               description: "-cool\n-smart\n-funny")
+//        Person(name: "John Doe",
+//               locationMet : "iOS Club",
+//               major: "CS",
+//               dateMet: "11/01/2025",
+//               insta: "john_doe",
+//               tags: ["📚 Class", "🧩 Club"],
+//               description: "-cool\n-smart\n-funny")
     ]
     
-    let categories = [
-        ("📚", "Class", 4),
-        ("👟", "Gym", 1),
-        ("🧩", "Club", 6),
-        ("🛏️", "Dorm", 2),
-        ("🏫", "Week of Welcome", 2)
+    let categoryNames = [
+        ("📚", "Class"),
+        ("👟", "Gym"),
+        ("🧩", "Club"),
+        ("🛏️", "Dorm"),
+        ("🏫", "Week of Welcome")
     ]
+    
+    var filteredPeople: [Person] {
+        people.filter { person in
+            let searchMatches = searchText.isEmpty || person.name.lowercased().contains(searchText.lowercased())
+            
+            let filterMatches = selectedFilters.isEmpty ||
+            person.tags.contains { tag in
+                selectedFilters.contains { filter in
+                    tag.localizedCaseInsensitiveContains(filter)
+                }
+            }
+            return searchMatches && filterMatches
+        }
+    }
+    
+    var categories: [(String, String, Int)] {
+        var result: [(String, String, Int)] = []
+
+        for (emoji, name) in categoryNames {
+            var count = 0
+            for person in people {
+                for tag in person.tags {
+                    if tag.localizedCaseInsensitiveContains(name) {
+                        count += 1
+                        break
+                    }
+                }
+            }
+            result.append((emoji, name, count))
+        }
+
+        return result
+    }
+
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -93,13 +128,14 @@ struct ContentView: View {
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 10)
                                     .background(
-                                        selectedFilters.contains(name) ? Color(red: 0.353, green: 0.463, blue: 0.933) : .white
+                                        selectedFilters.contains(name) ? mainPurple : .white
                                     )
                                     .cornerRadius(67)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 67)
-                                            .stroke(selectedFilters.contains(name) ? Color(red: 0.271, green: 0.337, blue: 0.863) : .black, lineWidth: 1)
+                                            .stroke(selectedFilters.contains(name) ? mainPurple : .black, lineWidth: 1)
                                     )
+
                                 }
                             }
                         }
@@ -110,14 +146,24 @@ struct ContentView: View {
                 
                 // people list
                 ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(people) { person in
-                            PersonCard(person: person)
-                            
+                    if (filteredPeople.isEmpty) {
+                        Text("Click the + when you\nmeet new people!")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.gray)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.top, 50)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+
+                    } else {
+                        VStack(spacing: 16) {
+                            ForEach(filteredPeople) { person in
+                                PersonCard(person: person)
+                                
+                            }
                         }
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 100)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 100)
                 }
             }
             
