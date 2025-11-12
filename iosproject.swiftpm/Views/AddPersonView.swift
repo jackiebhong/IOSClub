@@ -4,6 +4,7 @@ struct AddPersonView: View {
     var onAdd: (Person) -> Void
     @Environment(\.dismiss) private var dismiss
     
+    //add person variables
     @State private var newName : String = ""
     @State private var newLocation : String = ""
     @State private var newMajor : String = ""
@@ -11,6 +12,10 @@ struct AddPersonView: View {
     @State private var newInsta : String = ""
     @State private var newTags : String = ""
     @State private var newNotes : String = ""
+    
+    //photo upload variables
+    @State private var showUpload = false
+    @State private var photo: UIImage? = nil
     
     var body: some View {
         ScrollView{
@@ -39,13 +44,39 @@ struct AddPersonView: View {
                         VStack (alignment: .leading){
                             ZStack {
                                 VStack (alignment: .leading){
+                                    // upload photo code
                                     Text("Upload photo")
                                         .bold()
                                         .padding(.top)
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(.gray.opacity(0.2))
-                                        .frame(width: 120, height: 120)
-                                        .padding(.trailing, 12)
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(.gray.opacity(0.2))
+                                            .frame(width: 120, height: 120)
+                                            .padding(.trailing, 12)
+                                            .overlay(
+                                                Image(systemName: "person")
+                                                    .font(.system(size: 75))
+                                                    .foregroundColor(.gray)
+                                                    .padding(.trailing, 12)
+                                            )
+                                        
+                                        if let img = photo {
+                                            Image(uiImage: img)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width:120, height:120)
+                                                .clipShape(RoundedRectangle(cornerRadius:12))
+                                                .padding(.trailing, 12)
+                                        }
+                                        Button {
+                                            showUpload = true
+                                        } label: {
+                                            Color.clear.frame(width:120, height:120)
+                                        }
+                                        .sheet(isPresented: $showUpload) {
+                                            UploadPhotos(selectedImage: $photo)
+                                        }
+                                    }
                                     HStack{
                                         Text("Name")
                                             .padding(.top)
@@ -142,6 +173,7 @@ struct AddPersonView: View {
                                             dateMet: newDate,
                                             insta: newInsta,
                                             tags: tagArray,
+                                            imageData: photo?.jpegData(compressionQuality: 0.9),
                                             description: newNotes
                                         )
                                             onAdd(newPerson)

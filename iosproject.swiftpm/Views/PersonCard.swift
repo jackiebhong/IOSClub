@@ -18,11 +18,28 @@ struct PersonCard: View {
         VStack(spacing: 12) {
             HStack(alignment: .top, spacing: 4) {
                 
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.gray.opacity(0.2))
-                    .frame(width: 120, height: 120)
-                    .padding(.trailing, 12)
-                
+                if let data = person.imageData,
+                   let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 120, height: 120)
+                        .clipShape(RoundedRectangle(cornerRadius:12))
+                        .padding(.trailing, 12)
+                    
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.gray.opacity(0.2))
+                        .frame(width: 120, height: 120)
+                        .padding(.trailing, 12)
+                        .overlay(
+                            Image(systemName: "person")
+                                .font(.system(size: 75))
+                                .foregroundColor(.gray)
+                                .padding(.trailing, 12)
+                        )
+                    
+                }
                 VStack(alignment: .leading, spacing: 6) {
                     Text(person.name)
                         .font(.system(size: 24, weight: .bold))

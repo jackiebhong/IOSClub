@@ -17,6 +17,7 @@ struct Person: Identifiable {
     var insta: String
     var tags: [String]
     var description: String
+    var imageData: Data? = nil
     
     init(name: String = "No Name",
         locationMet: String = "",
@@ -24,13 +25,15 @@ struct Person: Identifiable {
         dateMet: String = "01/01/2025",
         insta: String = "",
         tags: [String] = [],
-         description: String = "")  {
+        imageData: Data? = nil,
+         description: String = ""){
         self.name = name.isEmpty ? "No Name" : name
         self.locationMet = locationMet
         self.major = major
         self.dateMet = dateMet
         self.insta = insta
         self.tags = tags
+        self.imageData = imageData
         self.description = description.isEmpty ? "No Description": description
     }
     

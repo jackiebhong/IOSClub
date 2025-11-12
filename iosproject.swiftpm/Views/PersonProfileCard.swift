@@ -34,9 +34,28 @@ struct PersonProfileCard: View {
                     .padding(.horizontal, 24)
                     
                     // Photo placeholder
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(.gray.opacity(0.15))
-                        .frame(width: 180, height: 180)
+                    if let data = person.imageData,
+                       let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 120, height: 120)
+                            .clipShape(RoundedRectangle(cornerRadius:12))
+                            .padding(.trailing, 12)
+                        
+                    } else {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.gray.opacity(0.2))
+                            .frame(width: 120, height: 120)
+                            .padding(.trailing, 12)
+                            .overlay(
+                                Image(systemName: "person")
+                                    .font(.system(size: 75))
+                                    .foregroundColor(.gray)
+                                    .padding(.trailing, 12)
+                            )
+                        
+                    }
                     
                     // Tags
                     HStack(spacing: 8) {
